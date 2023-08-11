@@ -19,10 +19,11 @@ jobs:
       run: |
         git clone ${{ github.event.inputs.repo_url }} temp_repo
         cd temp_repo
-        if [ -z "${{ github.event.inputs.project_path }}" ]; then
+        if (-not ${{ github.event.inputs.project_path }}) {
           echo "PROJECT_PATH=" >> $GITHUB_ENV
-        else
+        } else {
           echo "PROJECT_PATH=${{ github.event.inputs.project_path }}" >> $GITHUB_ENV
+        }
 
     - name: Find and Build Visual Studio Projects
       shell: pwsh
@@ -38,7 +39,7 @@ jobs:
         }
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: temp_repo/**/bin/
