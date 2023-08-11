@@ -45,7 +45,7 @@ jobs:
             msbuild.exe $project.FullName /p:Configuration=Release $buildCmd
           }
         } else {
-          msbuild.exe $env:PROJECT_PATH /p:Configuration=Release
+          msbuild.exe $env:PROJECT_PATH /p:Configuration=Release $buildCmd
         }
 
     - name: Upload Artifacts
