@@ -38,7 +38,7 @@ jobs:
       shell: pwsh
       run: |
         cd temp_repo
-        $buildCmd = if (${{ github.event.inputs.build_target }}) { "/t:${{ github.event.inputs.build_target }}" } else { "" }
+        $buildCmd = if ("${{ github.event.inputs.build_target }}") { "/t:${{ github.event.inputs.build_target }}" } else { "" }
         if (-not $env:PROJECT_PATH) {
           $projects = Get-ChildItem -Recurse -Filter *.sln *.proj
           foreach ($project in $projects) {
