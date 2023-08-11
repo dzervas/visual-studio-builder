@@ -19,7 +19,7 @@ jobs:
       run: |
         git clone ${{ github.event.inputs.repo_url }} temp_repo
         cd temp_repo
-        if (-not ${{ github.event.inputs.project_path }}) {
+        if (-not "${{ github.event.inputs.project_path }}") {
           echo "PROJECT_PATH=" >> $GITHUB_ENV
         } else {
           echo "PROJECT_PATH=${{ github.event.inputs.project_path }}" >> $GITHUB_ENV
