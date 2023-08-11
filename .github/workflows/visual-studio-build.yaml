@@ -1,0 +1,44 @@
+name: Build Visual Studio Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'GitHub Repository URL'
+        required: true
+      project_path:
+        description: 'Project Path (Optional)'
+        required: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Repository
+      run: |
+        git clone ${{ github.event.inputs.repo_url }} temp_repo
+        cd temp_repo
+        if [ -z "${{ github.event.inputs.project_path }}" ]; then
+          echo "PROJECT_PATH=" >> $GITHUB_ENV
+        else
+          echo "PROJECT_PATH=${{ github.event.inputs.project_path }}" >> $GITHUB_ENV
+
+    - name: Find and Build Visual Studio Projects
+      shell: pwsh
+      run: |
+        cd temp_repo
+        if (-not $env:PROJECT_PATH) {
+          $projects = Get-ChildItem -Recurse -Filter *.sln
+          foreach ($project in $projects) {
+            & "msbuild.exe" $project.FullName /p:Configuration=Release
+          }
+        } else {
+          & "msbuild.exe" $env:PROJECT_PATH /p:Configuration=Release
+        }
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artifacts
+        path: temp_repo/**/bin/
