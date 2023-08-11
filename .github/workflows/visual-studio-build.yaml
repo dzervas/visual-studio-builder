@@ -4,10 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       repo_url:
-        description: 'GitHub Repository URL'
+        description: GitHub Repository URL
         required: true
       project_path:
-        description: 'Project Path (Optional)'
+        description: .sln or .csproj file path (Optional)
+        required: false
+      build_target:
+        description: 'MSBuild Target (Optional)'
         required: false
 
 jobs:
@@ -28,14 +31,18 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
 
+    - name: Add dotnet to PATH
+      uses: actions/setup-dotnet@v3
+
     - name: Find and Build Visual Studio Projects
       shell: pwsh
       run: |
         cd temp_repo
+        $buildCmd = if (${{ github.event.inputs.build_target }}) { "/t:${{ github.event.inputs.build_target }}" } else { "" }
         if (-not $env:PROJECT_PATH) {
-          $projects = Get-ChildItem -Recurse -Filter *.sln
+          $projects = Get-ChildItem -Recurse -Filter *.sln *.proj
           foreach ($project in $projects) {
-            msbuild.exe $project.FullName /p:Configuration=Release
+            msbuild.exe $project.FullName /p:Configuration=Release $buildCmd
           }
         } else {
           msbuild.exe $env:PROJECT_PATH /p:Configuration=Release
