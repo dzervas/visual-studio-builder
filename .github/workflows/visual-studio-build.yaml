@@ -25,6 +25,9 @@ jobs:
           echo "PROJECT_PATH=${{ github.event.inputs.project_path }}" >> $GITHUB_ENV
         }
 
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
     - name: Find and Build Visual Studio Projects
       shell: pwsh
       run: |
@@ -32,10 +35,10 @@ jobs:
         if (-not $env:PROJECT_PATH) {
           $projects = Get-ChildItem -Recurse -Filter *.sln
           foreach ($project in $projects) {
-            & "msbuild.exe" $project.FullName /p:Configuration=Release
+            msbuild.exe $project.FullName /p:Configuration=Release
           }
         } else {
-          & "msbuild.exe" $env:PROJECT_PATH /p:Configuration=Release
+          msbuild.exe $env:PROJECT_PATH /p:Configuration=Release
         }
 
     - name: Upload Artifacts
