@@ -131,6 +131,6 @@ jobs:
         prerelease: false
         files: |
           temp_repo/bin/**/*
-          temp_repo/output/**/*
-          temp_repo/x64/Release/**/*
-          temp_repo/x86/Release/**/*
+          temp_repo/output/*
+          temp_repo/x64/Release/*
+          temp_repo/x86/Release/*
