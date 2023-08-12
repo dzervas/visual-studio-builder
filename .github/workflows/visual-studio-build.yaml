@@ -87,7 +87,7 @@ jobs:
             & "${driveLetter}:\Setup\wdksetup.exe" /quiet
             Dismount-DiskImage -ImagePath .\$installerName
           } else {
-            ./$installerName /quiet
+            & "$installerName" /quiet
           }
         }
 
