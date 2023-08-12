@@ -7,14 +7,18 @@ on:
         description: GitHub Repository URL
         required: true
       commit:
-        description: 'Commit or Tag to Checkout (Optional)'
+        description: Commit or Tag to Checkout (Optional)
         required: false
       project_file:
         description: .sln or .csproj file path (Optional)
         required: false
       msbuild_args:
-        description: 'MSBuild Arguments (Optional)'
+        description: MSBuild Arguments (Optional)
         required: false
+      dotnet_restore:
+        description: 'Restore .NET Packages'
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -91,6 +95,11 @@ jobs:
           }
         }
 
+    - name: DotNet Restore
+      if: github.event.inputs.dotnet_restore
+      run: |
+        cd temp_repo
+        dotnet restore ${{ github.event.inputs.project_file }}
 
     - name: Build Visual Studio Projects
       shell: pwsh
