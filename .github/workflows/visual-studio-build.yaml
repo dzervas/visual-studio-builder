@@ -96,7 +96,7 @@ jobs:
         }
 
     - name: DotNet Restore
-      if: github.event.inputs.dotnet_restore
+      if: ${{ github.event.inputs.dotnet_restore }}
       run: |
         cd temp_repo
         dotnet restore ${{ github.event.inputs.project_file }}
@@ -120,6 +120,7 @@ jobs:
       with:
         name: ${{ env.REPO_NAME_ESCAPED }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
         path: |
+          temp_repo/**/bin
           temp_repo/output
           temp_repo/x64
           temp_repo/x86
@@ -139,6 +140,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
+          temp_repo/**/bin/**/*
           temp_repo/output/**/*
           temp_repo/x64/Release/**/*
           temp_repo/x86/Release/**/*
