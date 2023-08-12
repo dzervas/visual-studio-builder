@@ -23,6 +23,9 @@ jobs:
       contents: write
 
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
     - name: Cache WDK installers
       id: cache-wdk
       uses: actions/cache@v3
@@ -30,7 +33,7 @@ jobs:
         path: |
           *.exe
           *.iso
-        key: wdk-${{ runner.os }}-${{ hashFiles('**/visual-studio-build.yaml') }} # Replace with the name of this workflow file
+        key: wdk-${{ runner.os }}-${{ hashFiles('.github/workflows/visual-studio-build.yaml') }} # Replace with the name of this workflow file
         restore-keys: |
           wdk-${{ runner.os }}-
 
