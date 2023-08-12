@@ -39,17 +39,11 @@ jobs:
       run: |
         cd temp_repo
         $buildCmd = if ("${{ github.event.inputs.build_target }}") { "/t:${{ github.event.inputs.build_target }}" } else { "" }
-        if (-not $env:PROJECT_PATH) {
-          $projects = Get-ChildItem -Recurse -Filter *.sln *.proj
-          foreach ($project in $projects) {
-            msbuild.exe $project.FullName /p:Configuration=Release $buildCmd
-          }
-        } else {
-          msbuild.exe $env:PROJECT_PATH /p:Configuration=Release $buildCmd
-        }
+        msbuild.exe $env:PROJECT_PATH /p:Configuration=Release $buildCmd
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: temp_repo/**/bin/
+        error-if-no-files-found: true
