@@ -66,10 +66,10 @@ jobs:
         name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }} - ${{ github.event.inputs.project_file }}
         tag_name: ${{ github.event.inputs.commit || env.CURRENT_COMMIT }}-${{ github.event.inputs.project_file }}
         body: |
-          Repo URL: ${{ github.event.inputs.repo_url }}
-          Project Path: ${{ github.event.inputs.project_path }}
-          Build Target: ${{ github.event.inputs.build_target }}
-          Commit or Tag: ${{ github.event.inputs.commit || env.CHECKED_OUT_COMMIT }}
+          - Repo URL: ${{env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
+          - Solution Path: ${{ github.event.inputs.project_file }}
+          - Build Target: ${{ github.event.inputs.build_target }}
+          - Commit or Tag: ${{ github.event.inputs.commit }}
         draft: false
         prerelease: false
         files: |
