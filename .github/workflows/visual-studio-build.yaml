@@ -23,6 +23,17 @@ jobs:
       contents: write
 
     steps:
+    - name: Cache WDK installers
+      id: cache-wdk
+      uses: actions/cache@v2
+      with:
+        path: |
+          *.exe
+          *.iso
+        key: wdk-${{ runner.os }}-${{ hashFiles('**/visual-studio-build.yaml') }} # Replace with the name of this workflow file
+        restore-keys: |
+          wdk-${{ runner.os }}-
+
     - name: Checkout Repository
       run: |
         git clone ${{ github.event.inputs.repo_url }} temp_repo
@@ -37,6 +48,49 @@ jobs:
 
     - name: Add dotnet to PATH
       uses: actions/setup-dotnet@v3
+
+    - name: Download WDK versions
+      shell: pwsh
+      run: |
+        $wdkLinks = @{
+          "WDK_7.1" = "https://download.microsoft.com/download/4/A/2/4A25C7D5-EFBE-4182-B6A9-AE6850409A78/GRMWDK_EN_7600_1.ISO",
+          "WDK_8" = "https://download.microsoft.com/download/2/4/C/24CA7FB3-FF2E-4DB5-BA52-62A4399A4601/wdk/wdksetup.exe",
+          "WDK_Win10_1607" = "https://download.microsoft.com/download/8/1/6/816FE939-15C7-4185-9767-42ED05524A95/wdk/wdksetup.exe",
+          "WDK_Win10_1703" = "https://download.microsoft.com/download/4/E/0/4E07EAAD-E394-4EA8-B2B8-D46E46A409C5/wdk/wdksetup.exe",
+          "WDK_Win10_1709" = "https://download.microsoft.com/download/7/D/D/7DD48DE6-8BDA-47C0-854A-539A800FAA90/wdk/wdksetup.exe",
+          "WDK_Win10_1803" = "https://download.microsoft.com/download/B/5/8/B58D625D-17D6-47A8-B3D3-668670B6D1EB/wdk/wdksetup.exe",
+          "WDK_Win10_1809" = "https://download.microsoft.com/download/1/4/0/140EBDB7-F631-4191-9DC0-31C8ECB8A11F/wdk/wdksetup.exe",
+          "WDK_Win10_1909" = "https://download.microsoft.com/download/2/9/3/29376990-B744-43C5-AE5C-99405068D58B/WDK/wdksetup.exe",
+          "WDK_Win10_22H2" = "https://download.microsoft.com/download/c/f/8/cf80b955-d578-4635-825c-2801911f9d79/wdk/wdksetup.exe",
+          "WDK_Win11_21H1" = "https://download.microsoft.com/download/7/d/6/7d602355-8ae9-414c-ae36-109ece2aade6/wdk/wdksetup.exe",
+        }
+
+        foreach ($name in $wdkLinks.Keys) {
+          $link = $wdkLinks[$name]
+          $originalName = [System.IO.Path]::GetFileName($link)
+          $installerName = "$name-$originalName"
+
+          if (-not (Test-Path -PathType Leaf $installerName)) {
+            Write-Host "Downloading $name"
+            Invoke-WebRequest -Uri $link -OutFile $installerName
+          } else {
+            Write-Host "Found $name"
+          }
+
+          Write-Host
+          Write-Host "Installing $name"
+          Write-Host
+
+          if ($name -eq "WDK_7.1") {
+            Mount-DiskImage -ImagePath .\$installerName
+            $driveLetter = (Get-DiskImage -ImagePath .\$installerName | Get-Volume).DriveLetter
+            & "${driveLetter}:\Setup\wdksetup.exe" /quiet
+            Dismount-DiskImage -ImagePath .\$installerName
+          } else {
+            ./$installerName /quiet
+          }
+        }
+
 
     - name: Build Visual Studio Projects
       shell: pwsh
