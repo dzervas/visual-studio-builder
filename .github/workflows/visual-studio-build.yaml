@@ -82,10 +82,10 @@ jobs:
           Write-Host
 
           if ($name -eq "WDK_7_1") {
-            Mount-DiskImage -ImagePath .\$installerName
-            $driveLetter = (Get-DiskImage -ImagePath .\$installerName | Get-Volume).DriveLetter
+            Mount-DiskImage -ImagePath ".\$installerName"
+            $driveLetter = (Get-DiskImage -ImagePath ".\$installerName" | Get-Volume).DriveLetter
             & "${driveLetter}:\Setup\wdksetup.exe" /quiet
-            Dismount-DiskImage -ImagePath .\$installerName
+            Dismount-DiskImage -ImagePath ".\$installerName"
           } else {
             & ".\$installerName" /quiet
           }
