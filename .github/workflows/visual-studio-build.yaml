@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Cache WDK installers
       id: cache-wdk
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           *.exe
@@ -111,7 +111,7 @@ jobs:
       with:
         name: ${{ env.REPO_NAME_ESCAPED }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
         path: |
-          temp_repo/**/output
+          temp_repo/output
           temp_repo/x64
           temp_repo/x86
         if-no-files-found: error
@@ -130,6 +130,6 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          temp_repo/**/output/**/*
-          temp_repo/x64/Release/*
-          temp_repo/x86/Rlease/*
+          temp_repo/output/**/*
+          temp_repo/x64/Release/**/*
+          temp_repo/x86/Release/**/*
