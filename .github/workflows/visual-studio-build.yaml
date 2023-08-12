@@ -13,12 +13,8 @@ on:
         description: .sln or .csproj file path (Optional)
         required: false
       msbuild_args:
-        description: MSBuild Arguments (Optional)
+        description: MSBuild Arguments (Optional) - to restore dotnet packages use `/t:restore,build /p:RestorePackagesConfig=true`
         required: false
-      dotnet_restore:
-        description: 'Restore .NET Packages'
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -95,12 +91,6 @@ jobs:
           }
         }
 
-    - name: DotNet Restore
-      if: ${{ github.event.inputs.dotnet_restore }}
-      run: |
-        cd temp_repo
-        dotnet restore ${{ github.event.inputs.project_file }}
-
     - name: Build Visual Studio Projects
       shell: pwsh
       run: |
@@ -140,7 +130,7 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          temp_repo/**/bin/**/*
+          temp_repo/bin/**/*
           temp_repo/output/**/*
           temp_repo/x64/Release/**/*
           temp_repo/x86/Release/**/*
