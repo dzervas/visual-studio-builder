@@ -6,11 +6,14 @@ on:
       repo_url:
         description: GitHub Repository URL
         required: true
-      project_path:
+      commit:
+        description: 'Commit or Tag to Checkout (Optional)'
+        required: false
+      project_file:
         description: .sln or .csproj file path (Optional)
         required: false
-      build_target:
-        description: 'MSBuild Target (Optional)'
+      msbuild_args:
+        description: 'MSBuild Arguments (Optional)'
         required: false
 
 jobs:
@@ -22,11 +25,10 @@ jobs:
       run: |
         git clone ${{ github.event.inputs.repo_url }} temp_repo
         cd temp_repo
-        if (-not "${{ github.event.inputs.project_path }}") {
-          echo "PROJECT_PATH=" >> $GITHUB_ENV
-        } else {
-          echo "PROJECT_PATH=${{ github.event.inputs.project_path }}" >> $GITHUB_ENV
-        }
+
+        $commitHash = git rev-parse HEAD
+        echo "CURRENT_COMMIT=$commitHash" | Out-File -Append $env:GITHUB_ENV
+
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
@@ -38,8 +40,7 @@ jobs:
       shell: pwsh
       run: |
         cd temp_repo
-        $buildCmd = if ("${{ github.event.inputs.build_target }}") { "/t:${{ github.event.inputs.build_target }}" } else { "" }
-        msbuild.exe $env:PROJECT_PATH /p:OutputPath=output /p:Configuration=Release $buildCmd
+        msbuild.exe ${{ github.event.inputs.project_file }} /p:OutDir=output /p:Configuration=Release ${{ github.event.inputs.msbuild_args }}}
 
     - name: Set artifact name
       shell: pwsh
@@ -53,3 +54,17 @@ jobs:
         name: ${{ github.event.inputs.project_path }}
         path: temp_repo/**/output/
         if-no-files-found: error
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
+        body: |
+          Repo URL: ${{ github.event.inputs.repo_url }}
+          Project Path: ${{ github.event.inputs.project_path }}
+          Build Target: ${{ github.event.inputs.build_target }}
+          Commit or Tag: ${{ github.event.inputs.commit || env.CHECKED_OUT_COMMIT }}
+        draft: false
+        prerelease: false
+        files: |
+          temp_repo/**/output/*
