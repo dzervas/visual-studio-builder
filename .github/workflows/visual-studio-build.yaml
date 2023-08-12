@@ -36,7 +36,7 @@ jobs:
     - name: Add dotnet to PATH
       uses: actions/setup-dotnet@v3
 
-    - name: Find and Build Visual Studio Projects
+    - name: Build Visual Studio Projects
       shell: pwsh
       run: |
         cd temp_repo
@@ -52,13 +52,16 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
-        path: temp_repo/**/output/
+        path: |
+          temp_repo/**/output
+          temp_repo/x64
+          temp_repo/x86
         if-no-files-found: error
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
+        name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }} - ${{ github.event.inputs.project_file }}
         body: |
           Repo URL: ${{ github.event.inputs.repo_url }}
           Project Path: ${{ github.event.inputs.project_path }}
@@ -67,4 +70,6 @@ jobs:
         draft: false
         prerelease: false
         files: |
-          temp_repo/**/output/*
+          temp_repo/**/output
+          temp_repo/x64
+          temp_repo/x86
