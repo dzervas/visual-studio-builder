@@ -53,8 +53,8 @@ jobs:
       shell: pwsh
       run: |
         $wdkLinks = @{
-          WDK_7_1 = "https://download.microsoft.com/download/4/A/2/4A25C7D5-EFBE-4182-B6A9-AE6850409A78/GRMWDK_EN_7600_1.ISO"
-          WDK_8 = "https://download.microsoft.com/download/2/4/C/24CA7FB3-FF2E-4DB5-BA52-62A4399A4601/wdk/wdksetup.exe"
+          WDK_7_1        = "https://download.microsoft.com/download/4/A/2/4A25C7D5-EFBE-4182-B6A9-AE6850409A78/GRMWDK_EN_7600_1.ISO"
+          WDK_8          = "https://download.microsoft.com/download/2/4/C/24CA7FB3-FF2E-4DB5-BA52-62A4399A4601/wdk/wdksetup.exe"
           WDK_Win10_1607 = "https://download.microsoft.com/download/8/1/6/816FE939-15C7-4185-9767-42ED05524A95/wdk/wdksetup.exe"
           WDK_Win10_1703 = "https://download.microsoft.com/download/4/E/0/4E07EAAD-E394-4EA8-B2B8-D46E46A409C5/wdk/wdksetup.exe"
           WDK_Win10_1709 = "https://download.microsoft.com/download/7/D/D/7DD48DE6-8BDA-47C0-854A-539A800FAA90/wdk/wdksetup.exe"
@@ -87,7 +87,7 @@ jobs:
             & "${driveLetter}:\Setup\wdksetup.exe" /quiet
             Dismount-DiskImage -ImagePath .\$installerName
           } else {
-            & "$installerName" /quiet
+            & ".\$installerName" /quiet
           }
         }
 
