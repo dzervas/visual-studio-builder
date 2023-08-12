@@ -118,7 +118,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }} - ${{ github.event.inputs.project_file }}
-        tag_name: ${{ github.event.inputs.commit || env.CURRENT_COMMIT }}-${{ github.event.inputs.project_file }}
+        tag_name: ${{ github.run_id }}
         body: |
           - Repo URL: ${{env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
           - Solution Path: ${{ github.event.inputs.project_file }}
