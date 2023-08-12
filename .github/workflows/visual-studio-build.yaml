@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
     permissions:
       contents: write
 
@@ -42,7 +42,7 @@ jobs:
       shell: pwsh
       run: |
         cd temp_repo
-        msbuild.exe ${{ github.event.inputs.project_file }} /v:diag /p:BaseOutputPath=output /p:Configuration=Release ${{ github.event.inputs.msbuild_args }}
+        msbuild.exe ${{ github.event.inputs.project_file }} /p:BaseOutputPath=output /p:Configuration=Release ${{ github.event.inputs.msbuild_args }}
 
     - name: Set artifact name
       shell: pwsh
