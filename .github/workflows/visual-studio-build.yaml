@@ -40,7 +40,7 @@ jobs:
       shell: pwsh
       run: |
         cd temp_repo
-        msbuild.exe ${{ github.event.inputs.project_file }} /p:OutDir=output /p:Configuration=Release ${{ github.event.inputs.msbuild_args }}}
+        msbuild.exe ${{ github.event.inputs.project_file }} /p:BaseOutputPath=output /p:Configuration=Release ${{ github.event.inputs.msbuild_args }}}
 
     - name: Set artifact name
       shell: pwsh
@@ -51,7 +51,7 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ github.event.inputs.project_path }}
+        name: ${{ env.REPO_NAME }}@${{ github.event.inputs.commit || env.CURRENT_COMMIT }}
         path: temp_repo/**/output/
         if-no-files-found: error
 
